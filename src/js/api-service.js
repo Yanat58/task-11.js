@@ -11,23 +11,18 @@ export default class ApiService {
     const url = 'https://pixabay.com/api/';
     const filter = `&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`;
 
-    // return fetch(`${url}?key=${key}${filter}`)
-    //   .then(r => r.json())
-    //   .then(data => {
-    //     console.log(data);
-    //     this.page += 1;
-
-    //     return data.hits;
-    //   });
-
     return await axios
       .get(`${url}?key=${key}${filter}`)
       .then(responce => responce.data)
       .then(data => {
         console.log(data);
-        this.page += 1;
+
         return data.hits;
       });
+  }
+
+  increment() {
+    this.page += 1;
   }
 
   resetPage() {
