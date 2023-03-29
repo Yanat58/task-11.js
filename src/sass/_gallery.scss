@@ -1,0 +1,18 @@
+.gallery {
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.photo-card {
+  display: flex;
+
+  flex-direction: column;
+  justify-content: center;
+  max-width: 240px;
+}
+.gallery-image {
+  width: 240px;
+}
