@@ -16,3 +16,11 @@
 .gallery-image {
   width: 240px;
 }
+
+// button
+.button.is-hidden {
+  display: none;
+}
+.button > .spinner.is-hidden {
+  display:none;
+}

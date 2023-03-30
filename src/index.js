@@ -4,17 +4,22 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import ApiService from './js/api-service';
 import { galleryMarkup } from './js/markup-template';
+import LoadMoreBtn  from "./js/load-more-btn";
 
 const refs = {
   searchForm: document.querySelector('#search-form'),
   galleryBox: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('.load-more'),
 };
+
+const loadMoreBtn = new LoadMoreBtn({
+  selector: '.load-more',
+  hidden: true,
+});
 
 const apiService = new ApiService();
 
 refs.searchForm.addEventListener('submit', onSearchFormSubmit);
-refs.loadMoreBtn.addEventListener('click', onLoadMoreClick);
+loadMoreBtn.refs.button.addEventListener('click', onLoadMoreClick);
 
 const lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
@@ -30,13 +35,15 @@ async function onSearchFormSubmit(e) {
   //   apiService.query,
   //   apiService.page
   // );
+  loadMoreBtn.show();
+ 
   apiService.resetPage();
 
   const { hits, totalHits } = await apiService.fetchGallery();
-  if (totalHits > 40) {
-    refs.loadMoreBtn.classList.add('is-hidden');
+  if (totalHits > 10) {
+    loadMoreBtn.enable();
   } else {
-    refs.loadMoreBtn.classList.remove('is-hidden');
+    loadMoreBtn.disable();
   }
   if (apiService.query.trim() === '') {
     Notify.info(
@@ -70,12 +77,17 @@ async function onSearchFormSubmit(e) {
 
   if (hits.length === totalHits) {
     Notify.info(`We're sorry, but you've reached the end of search results.`);
-    refs.loadMoreBtn.classList.add('is-hidden');
+    loadMoreBtn.enable();
   }
 }
 
-function onLoadMoreClick() {
-  apiService.fetchGallery().then(appendGalleryMarkup);
+async function onLoadMoreClick() {
+  apiService.incrementPage()
+  loadMoreBtn.show();
+  loadMoreBtn.disable();
+  const { hits, totalHits } = await apiService.fetchGallery();
+  appendGalleryMarkup(hits);
+  loadMoreBtn.enable();
 }
 
 function appendGalleryMarkup(hits) {

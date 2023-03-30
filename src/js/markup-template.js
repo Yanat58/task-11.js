@@ -1,5 +1,5 @@
-export function galleryMarkup(image) {
-  return image
+export function galleryMarkup(hits) {
+  return hits
     .map(
       ({
         webformatURL,
