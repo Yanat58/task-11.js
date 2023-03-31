@@ -13,7 +13,7 @@ export default class ApiService {
 
     return await axios
       .get(`${url}?key=${key}${filter}`)
-      .then(responce => responce.data);
+      .then(responce => responce.data) ;
     // .then(data => {
     //   console.log(data);
 
@@ -26,7 +26,7 @@ export default class ApiService {
   }
 
   resetPage() {
-    this.page = 1;
+     this.page = 1;
   }
 
   get query() {

@@ -32,13 +32,11 @@ async function onSearchFormSubmit(e) {
   e.preventDefault();
 
   apiService.query = e.currentTarget.elements.searchQuery.value;
-  loadMoreBtn.show();
+  loadMoreBtn.hide();
   console.log(apiService.page);
-  apiService.page = 1;
-  const { hits, totalHits } = await apiService.fetchGallery(
-    apiService.query,
-    apiService.page
-  );
+  apiService.resetPage();
+  console.log(await apiService.fetchGallery())
+  const { hits, totalHits } = await apiService.fetchGallery();
 
   if (totalHits > 10) {
     loadMoreBtn.enable();
@@ -68,31 +66,31 @@ async function onSearchFormSubmit(e) {
     appendGalleryMarkup(hits);
   }
 
-  if (quantityHits === totalHits) {
+  if (totalHits === hits.length) {
     Notify.info(`We're sorry, but you've reached the end of search results.`);
-    loadMoreBtn.enable();
+    loadMoreBtn.hide();
   }
 }
 
 async function onLoadMoreClick() {
+  console.log('до',apiService.page);
+    apiService.incrementPage();
   try {
     const { hits, totalHits } = await apiService
-      .fetchGallery
-      // apiService.query,
-      // apiService.page
-      ();
-    apiService.page += 1;
-    console.log(apiService.page);
+      .fetchGallery();
+    console.log(appendGalleryMarkup(hits))
+    console.log('після',apiService.page);
     appendGalleryMarkup(hits);
+    
     loadMoreBtn.show();
     loadMoreBtn.disable();
     loadMoreBtn.enable();
 
-    quantityHits = 0;
+    quantityHits =0;
     quantityHits += hits.length;
     if (quantityHits === totalHits) {
       Notify.info(`We're sorry, but you've reached the end of search results.`);
-      loadMoreBtn.enable();
+      loadMoreBtn.hide();
     }
   } catch (error) {
     Notify.failure(error.message, 'Something went wrong!');
@@ -100,8 +98,8 @@ async function onLoadMoreClick() {
   }
 }
 
-function appendGalleryMarkup(hits) {
-  refs.galleryBox.insertAdjacentHTML('beforeend', galleryMarkup(hits));
+function appendGalleryMarkup(photo) {
+  refs.galleryBox.insertAdjacentHTML('beforeend', galleryMarkup(photo));
   lightbox.refresh();
 }
 
