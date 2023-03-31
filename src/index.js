@@ -15,7 +15,7 @@ const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   hidden: true,
 });
-
+console.log(loadMoreBtn)
 const apiService = new ApiService();
 
 refs.searchForm.addEventListener('submit', onSearchFormSubmit);
@@ -30,15 +30,15 @@ let quantityHits = 0;
 
 async function onSearchFormSubmit(e) {
   e.preventDefault();
-
+loadMoreBtn.hide();
   apiService.query = e.currentTarget.elements.searchQuery.value;
-  loadMoreBtn.hide();
+  
   console.log(apiService.page);
   apiService.resetPage();
   console.log(await apiService.fetchGallery())
   const { hits, totalHits } = await apiService.fetchGallery();
 
-  if (totalHits > 10) {
+  if (totalHits > 5) {
     loadMoreBtn.enable();
   } else {
     loadMoreBtn.disable();
@@ -73,18 +73,17 @@ async function onSearchFormSubmit(e) {
 }
 
 async function onLoadMoreClick() {
-  console.log('до',apiService.page);
-    apiService.incrementPage();
   try {
+    apiService.incrementPage();
+  console.log('до',apiService.page);
     const { hits, totalHits } = await apiService
       .fetchGallery();
-    console.log(appendGalleryMarkup(hits))
     console.log('після',apiService.page);
     appendGalleryMarkup(hits);
     
-    loadMoreBtn.show();
-    loadMoreBtn.disable();
-    loadMoreBtn.enable();
+    // loadMoreBtn.show();
+    // loadMoreBtn.disable();
+    // loadMoreBtn.enable();
 
     quantityHits =0;
     quantityHits += hits.length;
