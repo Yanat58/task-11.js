@@ -15,7 +15,7 @@ const loadMoreBtn = new LoadMoreBtn({
   selector: '.load-more',
   hidden: true,
 });
-console.log(loadMoreBtn)
+console.log(loadMoreBtn);
 const apiService = new ApiService();
 
 refs.searchForm.addEventListener('submit', onSearchFormSubmit);
@@ -30,15 +30,14 @@ let quantityHits = 0;
 
 async function onSearchFormSubmit(e) {
   e.preventDefault();
-loadMoreBtn.hide();
+  loadMoreBtn.hide();
   apiService.query = e.currentTarget.elements.searchQuery.value;
-  
-  console.log(apiService.page);
+
   apiService.resetPage();
-  console.log(await apiService.fetchGallery())
   const { hits, totalHits } = await apiService.fetchGallery();
 
-  if (totalHits > 5) {
+  if (totalHits > 30) {
+    loadMoreBtn.show();
     loadMoreBtn.enable();
   } else {
     loadMoreBtn.disable();
@@ -51,7 +50,6 @@ loadMoreBtn.hide();
     return;
   }
 
-  quantityHits += hits.length;
   if (totalHits === 0) {
     Notify.failure(
       `Sorry, there are no images matching your search query. Please try again.`
@@ -75,18 +73,17 @@ loadMoreBtn.hide();
 async function onLoadMoreClick() {
   try {
     apiService.incrementPage();
-  console.log('до',apiService.page);
-    const { hits, totalHits } = await apiService
-      .fetchGallery();
-    console.log('після',apiService.page);
+    const { hits, totalHits } = await apiService.fetchGallery();
     appendGalleryMarkup(hits);
-    
-    // loadMoreBtn.show();
-    // loadMoreBtn.disable();
-    // loadMoreBtn.enable();
-
-    quantityHits =0;
+    console.log(await apiService.fetchGallery());
     quantityHits += hits.length;
+
+    loadMoreBtn.show();
+    loadMoreBtn.disable();
+    loadMoreBtn.enable();
+    console.log(hits.length);
+    console.log(totalHits);
+    сonsole.log(quantityHits);
     if (quantityHits === totalHits) {
       Notify.info(`We're sorry, but you've reached the end of search results.`);
       loadMoreBtn.hide();
