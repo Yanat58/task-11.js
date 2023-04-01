@@ -4,7 +4,7 @@ export default class ApiService {
   constructor() {
     this.searchQuery = '';
     this.page = 1;
-    this.perPage = 5
+    this.perPage = 5;
   }
 
   async fetchGallery() {

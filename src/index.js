@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -17,14 +18,14 @@ const loadMoreBtn = new LoadMoreBtn({
 
 const apiService = new ApiService();
 
+refs.searchForm.addEventListener('submit', onSearchFormSubmit);
+loadMoreBtn.refs.button.addEventListener('click', onLoadMoreClick);
+
 const lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
   captionsData: 'alt',
 });
 
-
-refs.searchForm.addEventListener('submit', onSearchFormSubmit);
-loadMoreBtn.refs.button.addEventListener('click', onLoadMoreClick);
 
 
 async function onSearchFormSubmit(e) {
@@ -32,7 +33,9 @@ async function onSearchFormSubmit(e) {
 loadMoreBtn.hide();
   apiService.query = e.currentTarget.elements.searchQuery.value;
   
+  console.log(apiService.page);
   apiService.resetPage();
+  console.log(await apiService.fetchGallery())
   const { hits, totalHits } = await apiService.fetchGallery();
 
   if (totalHits > 5) {
@@ -77,6 +80,7 @@ async function onLoadMoreClick() {
     appendGalleryMarkup(hits);
     
     loadMoreBtn.show();
+    // loadMoreBtn.disable();
     loadMoreBtn.enable();
 
    console.log(apiService.quantityPage())
