@@ -14,24 +14,19 @@ export default class ApiService {
 
     return await axios
       .get(`${url}?key=${key}${filter}`)
-      .then(responce => responce.data) ;
-    // .then(data => {
-    //   console.log(data);
-
-    //   return data.hits;
-    // });
+      .then(responce => responce.data);
   }
 
   incrementPage() {
     this.page += 1;
   }
 
-  resetPage(){
+  resetPage() {
     this.page = 1;
   }
 
   quantityPage() {
-   return this.page *  this.perPage
+    return this.page * this.perPage;
   }
 
   get query() {

@@ -26,53 +26,60 @@ const lightbox = new SimpleLightbox('.gallery a', {
 refs.searchForm.addEventListener('submit', onSearchFormSubmit);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMoreClick);
 
-function onSearchFormSubmit(e) {
+async function onSearchFormSubmit(e) {
   e.preventDefault();
   loadMoreBtn.hide();
-  apiService.query = e.currentTarget.elements.searchQuery.value;
-  if (apiService.query.trim() === '') {
+  apiService.query = e.currentTarget.elements.searchQuery.value.trim();
+
+  if (!apiService.query) {
+    Notify.info(
+      `Sorry, there are no images matching your search query. Please try again.`
+    );
+    clearGalleryMarkup();
+    return;
+  }
+
+  if (apiService.query === '') {
     Notify.info(
       `Sorry, there are no images matching your search query. Please try again.`
     );
     return;
   }
 
-quantityGalery()
-//  try{
 
-//   apiService.resetPage();
-//   const { hits, totalHits } = await apiService.fetchGallery();
+  try {
+  apiService.resetPage();
+  const { hits, totalHits } = await apiService.fetchGallery();
 
-//   if (totalHits > 5) {
-//     loadMoreBtn.show()
-//     loadMoreBtn.enable();
-//   } else {
-//     loadMoreBtn.disable();
-//   }
+  if (totalHits > 5) {
+    loadMoreBtn.show();
+    loadMoreBtn.enable();
+  } else {
+    loadMoreBtn.disable();
+  }
+    if (totalHits > 0) {
+      Notify.info(`Hooray! We found ${totalHits} images.`);
 
+      clearGalleryMarkup();
+      appendGalleryMarkup(hits);
+    }
 
-//     if (totalHits === 0) {
-//     Notify.failure(
-//       `Sorry, there are no images matching your search query. Please try again.`
-//     );
-//     return;
-//   }
+    if (totalHits === 0) {
+      Notify.failure(
+        `Sorry, there are no images matching your search query. Please try again.`
+      );
+      clearGalleryMarkup();
+      return;
+    }
 
-//   if (totalHits > 0) {
-//     Notify.info(`Hooray! We found ${totalHits} images.`);
-
-//     clearGalleryMarkup();
-//     appendGalleryMarkup(hits);
-//   }
-
-//   if (totalHits === hits.length) {
-//     Notify.info(`We're sorry, but you've reached the end of search results.`);
-//     loadMoreBtn.hide();
-//   }
-// } catch (error) {
-//   Notify.failure(error.message, 'Something went wrong!');
-//   clearGalleryMarkup();
-// }
+    if (totalHits === hits.length) {
+      Notify.info(`We're sorry, but you've reached the end of search results.`);
+      loadMoreBtn.hide();
+    }
+  } catch (error) {
+    Notify.failure(error.message, 'Something went wrong!');
+    clearGalleryMarkup();
+  }
 }
 
 async function onLoadMoreClick() {
@@ -80,11 +87,11 @@ async function onLoadMoreClick() {
     apiService.incrementPage();
     const { hits, totalHits } = await apiService.fetchGallery();
     appendGalleryMarkup(hits);
-    
+
     loadMoreBtn.show();
     loadMoreBtn.enable();
 
-   console.log(apiService.quantityPage())
+    console.log(apiService.quantityPage());
     if (apiService.quantityPage() >= totalHits) {
       Notify.info(`We're sorry, but you've reached the end of search results.`);
       loadMoreBtn.hide();
@@ -102,42 +109,4 @@ function appendGalleryMarkup(photo) {
 
 function clearGalleryMarkup() {
   refs.galleryBox.innerHTML = '';
-}
-
-async function quantityGalery() {
-  try{
-
-    apiService.resetPage();
-    const { hits, totalHits } = await apiService.fetchGallery();
-  
-    if (totalHits > 5) {
-      loadMoreBtn.show()
-      loadMoreBtn.enable();
-    } else {
-      loadMoreBtn.disable();
-    }
-  
-  
-      if (totalHits === 0) {
-      Notify.failure(
-        `Sorry, there are no images matching your search query. Please try again.`
-      );
-      return;
-    }
-  
-    if (totalHits > 0) {
-      Notify.info(`Hooray! We found ${totalHits} images.`);
-  
-      clearGalleryMarkup();
-      appendGalleryMarkup(hits);
-    }
-  
-    if (totalHits === hits.length) {
-      Notify.info(`We're sorry, but you've reached the end of search results.`);
-      loadMoreBtn.hide();
-    }
-  } catch (error) {
-    Notify.failure(error.message, 'Something went wrong!');
-    clearGalleryMarkup();
-  }
 }
